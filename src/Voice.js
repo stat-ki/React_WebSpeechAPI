@@ -1,32 +1,26 @@
-import React, {Component} from "react";
+import React, { useState } from "react";
+import { useSpeechRecognition } from "react-speech-kit";
 
-class Voice extends Component {
-    constructor(props) {
-        super(props);
-        this.recognition = this.initializeSpeechRecognition();
-    }
+function Voice() {
+  const [value, setValue] = useState("");
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      setValue(result);
+    },
+  });
 
-    initializeSpeechRecognition() {
-        let recognition = new webkitSpeechRecognition();
-        recognition.lang = 'ja';
-        recognition.continuous = true;
-        recognition.onresult = (event) => {
-            console.log(event.results[0][0].transcript)
-        }
-    }
-
-    record() {
-        this.recognition.start();
-    }
-
-    render() {
-        return(
-            <div className="main">
-                <h1>Web Speech API</h1>
-                <div>
-                    <button onClick={ () => this.record() }>Record</button>
-                </div>
-            </div>
-        );
-    }
+  return (
+    <div>
+      <textarea
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+      />
+      <button onMouseDown={listen} onMouseUp={stop}>
+        🎤
+      </button>
+      {listening && <div>Go ahead I'm listening</div>}
+    </div>
+  );
 }
+
+export default Voice;
